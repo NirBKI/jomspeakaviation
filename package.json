@@ -1,0 +1,16 @@
+{
+  "name": "ccae-portfolio",
+  "version": "1.0.0",
+  "description": "ClearComms Aviation English Portfolio Rebuild",
+  "scripts": {
+    "dev": "serve -l 3000 .",
+    "start": "serve -l 3000 .",
+    "audit": "npm audit --audit-level=high"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.48.0"
+  }
+}

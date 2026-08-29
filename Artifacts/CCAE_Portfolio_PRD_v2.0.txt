@@ -1,0 +1,396 @@
+ClearComms Aviation English (CCAE) Portfolio Rebuild — PRD v2.0
+Single source-of-truth specification for Google Antigravity (AI coding agent) and Munir Mohamad (Product Owner)
+
+0. Document Control & Coverage Map
+Field
+Value
+Product name
+ClearComms Aviation English (CCAE) — Personal Portfolio Rebuild
+Version
+v2.0 (supersedes the informally-built v1.0 live site at clearcommsaviation.kitabuild.com)
+Date
+29 August 2026
+Author / Product Owner
+Munir Mohamad
+Governing context
+Independent personal initiative; no accelerator/employer program. No hard external deadline.
+Budget ceiling
+Zero-cost / free-tier only across all services
+Primary consumers of this document
+Munir (Accountable/Product Owner) and Google Antigravity (Coding Agent) working together
+
+Coverage map — sections below marked N/A are explicitly considered, not omitted by oversight:
+	•	Section 2 (Program/Stakeholder Alignment): N/A — solo independent project, no external program
+	•	Section 9 (API Specification): Partial — no custom backend API; Supabase's auto-generated REST API and Cal.com's webhook are the only 'endpoints', documented in Section 9
+	•	All other sections apply, scaled to a solo, zero-cost, low-risk personal portfolio project
+1. Executive Summary
+This PRD governs the rebuild and expansion of Munir Mohamad's existing ClearComms Aviation English (CCAE) site into a fuller personal portfolio. Munir is a Malaysian Air Traffic Controller (WBKK, Kota Kinabalu) with 15 years' experience across FIS, Tower, and Approach Radar, and additionally serves as an OJT Instructor, Examiner, and ELP (English Language Proficiency) Rater. The rebuilt site continues to offer free aviation-English coaching sessions, but adds: (a) a database-backed request form capturing visitor details, (b) an integrated calendar booking flow so visitors can self-select an available consultation slot, (c) automatic WhatsApp notification to Munir on each new booking, and (d) expanded content sections (Experience Timeline, Testimonials, Resources) that better reflect his full credentials.
+The project is a solo, zero-cost effort built collaboratively between Munir and the Google Antigravity coding agent. It handles real personal data (name, email, mobile number) at small scale, which sets the security/compliance bar at 'disciplined basics correctly applied' — not enterprise-grade — per Section 8.
+2. Program / Stakeholder Alignment
+Not applicable. This is an independent personal initiative with no accelerator, employer program, or external governing body. No milestone dates are imposed from outside; see Section 11 for the roadmap Munir has chosen for himself.
+3. Vision & Problem Statement
+	•	Problem: Malaysian aviation professionals (student pilots, ATC trainees, controllers, cabin crew, etc.) often don't use English outside working hours, which erodes confidence and readiness ahead of English Language Proficiency (ELP) exams and other assessments. Existing prep resources are either formal/expensive or generic, not tailored to real aviation communication.
+	•	Who has this problem today: Aviation trainees and professionals across Malaysia preparing for ELP tests, ratings, or general operational English confidence — currently coping via informal peer practice, self-study, or nothing at all.
+	•	Definition of success (6 months): A steady stream of free-session bookings via the site, visible engagement (repeat visitors, resource downloads), and a small but growing set of testimonials demonstrating real impact.
+	•	Competitive landscape / wedge: Generic English-learning apps and paid IELTS-style coaching exist, but none are run by a practicing Malaysian ATC officer who is also a certified OJT Instructor, Examiner, and ELP Rater — i.e., someone who assesses this exact skill professionally. That credential-backed, free, judgement-free access is the defensible wedge.
+	•	Positioning (binding sentence): "Free, assessment-grade aviation English coaching from a practicing Malaysian air traffic controller — for the community, by the community."
+4. Stakeholders & Actor Separation (RACI)
+Paying customer: none (free service). Day-to-day beneficiary: aviation professionals/trainees who book sessions. No third-party sign-off is required (independent initiative; disclaimer already clarifies it is not affiliated with CAAM or ICAO).
+Task / Deliverable
+Responsible
+Accountable
+Consulted
+Informed
+PRD / technical specification
+Claude (spec drafting)
+Munir
+—
+Antigravity
+Frontend code (HTML/CSS/JS)
+Google Antigravity
+Munir
+Claude (spec)
+—
+Supabase schema & policies
+Google Antigravity
+Munir
+Claude (spec)
+—
+Cal.com / webhook / CallMeBot integration
+Google Antigravity
+Munir
+Claude (spec)
+—
+Security review of AI-generated diffs
+Munir
+Munir
+—
+—
+Deployment to Vercel
+Munir (approves) / Antigravity (executes)
+Munir
+—
+—
+Content (bio, credentials, testimonials)
+Munir
+Munir
+—
+Antigravity
+Note per governance protocols: an autonomous coding agent is never assigned Accountable status. Munir retains final review and merge approval on all AI-generated changes (see Section 6 and Section 8).
+5. MVP Scope (MoSCoW)
+Must-Have
+	•	Rebuilt single-page site: Hero, About, Experience Timeline, Coaching, How It Works, Testimonials, Resources, Request Form + Booking, Disclaimer, Footer
+	•	Request form capturing: Full name, Email, Mobile number, Current rating, Organization, Purpose/Message — auto-stored to Supabase
+	•	PDPA-aligned consent checkbox + short privacy note on the form
+	•	Cal.com booking widget embedded, showing Munir's real availability, synced natively to his Google Calendar
+	•	Cal.com webhook → serverless function → (a) writes booking + custom field data to Supabase, (b) sends Munir a WhatsApp alert via CallMeBot
+	•	Visitor-facing booking confirmation via Cal.com's native confirmation screen
+	•	Prominent highlighting of the free 30-minute consultation offer (hero banner and/or dedicated CTA)
+	•	Hosted on Vercel free tier; code in a GitHub repository
+Should-Have
+	•	Experience Timeline visual component (FIS → Tower → Approach Radar → OJT → Examiner → ELP Rater)
+	•	Resources section with links/downloads for ELP prep material
+Could-Have (explicitly deferred — see Section 18)
+	•	Bilingual (EN/BM) toggle — explicitly declined by Munir for this version
+	•	Admin dashboard UI beyond the native Supabase dashboard
+	•	Automated email (in addition to WhatsApp) notifications
+Won't-Have (explicitly out of scope)
+	•	User accounts / visitor login
+	•	Payment processing of any kind (service is free)
+	•	Custom-built calendar/slot-management logic (Cal.com replaces this entirely)
+	•	Mobile native app
+No hard deadline or stage-gate drives this scope cut — Munir prioritized doing it well over doing it fast.
+6. Development Governance & Agentic Architecture
+Design-freeze rule: once this PRD is finalized, any requirement change is captured as a new PRD version (v2.1, v3.0, etc.) before it is implemented in code — never edited directly in the codebase first. This follows the Universal IT Project Development Protocol's Design Freeze Mechanism, scaled to a solo project (Munir plays both Architect-approval and Product Owner roles).
+5-Layer agentic framework (Antigravity-specific), scaled to solo/zero-cost
+	•	Memory / Constitution: Antigravity must never: hardcode API keys/secrets (use .env only); write real visitor data into seed/test files; auto-run destructive or irreversible commands; auto-merge to the main branch.
+	•	Knowledge / Skills: This PRD itself (Sections 7, 9, 10) is the primary reference playbook. Supabase table schema (Section 10) and the Cal.com webhook payload shape (Section 9) are the two recurring-subtask references Antigravity should consult before writing integration code.
+	•	Guardrails / Hooks: Human (Munir) confirmation is required before: any command that writes/deletes files outside the project directory; any git push or merge to main; any change to Supabase Row Level Security (RLS) policies. Pre-commit secret scanning (gitleaks) runs before every commit.
+	•	Delegation / Subagents: Not needed at this scale — a single Antigravity session with full project-directory scope is sufficient. Revisit only if the project grows a second surface (e.g. a separate admin app).
+	•	Distribution / MCP / external connectors: Adopt now — Supabase MCP/API and Cal.com webhook, both least-privilege scoped (Supabase anon key with insert-only RLS policy; Cal.com webhook secret verified). Defer: any broader MCP tool not directly needed for this build (see Section 8's Antigravity settings checklist).
+Resourcing note (non-binding): a stronger reasoning-tier model suits the initial architecture/spec pass; a fast mid-tier model is sufficient for routine HTML/CSS/JS implementation once the spec is frozen.
+7. Tech Stack & System Architecture
+Layer
+Choice
+Why
+Frontend
+Vanilla HTML/CSS/JS (no framework, no build step)
+Single-page portfolio with one form; a framework adds build tooling with no corresponding benefit at this scope. Matches the existing site's simplicity.
+Backend / Database
+Supabase (managed Postgres + auto REST API)
+Zero-cost free tier (500MB), no server to maintain, built-in dashboard for Munir to view submissions, easy to add RLS-based access control.
+Booking / Calendar
+Cal.com (free, open-source)
+Native 2-way Google Calendar sync, supports custom form fields, supports webhooks — all on the free tier. Avoids building slot-management/double-booking logic from scratch.
+Notifications
+CallMeBot (free WhatsApp API)
+Zero-cost WhatsApp alert to Munir on each booking. Known limitation: unofficial API, less robust than a paid WhatsApp Business API — acceptable at this scale, flagged as a risk in Section 15.
+Serverless glue function
+Vercel Serverless Function (Node.js)
+Free tier; receives the Cal.com webhook, writes to Supabase, calls CallMeBot. No dedicated server to run or patch.
+Hosting
+Vercel (free tier)
+Simple git-based deploys, free SSL/TLS, matches the no-build-step frontend choice.
+Version control
+GitHub (free, public or private repo)
+Standard, free, integrates natively with Vercel deploys.
+Request flow (text diagram)
+	•	Visitor loads the site (static HTML/CSS/JS) from Vercel.
+	•	Visitor fills the request form (name, email, mobile, rating, organization, purpose, PDPA consent) and/or opens the embedded Cal.com widget to pick an available slot.
+	•	Form submission → Supabase JS client (CDN) → inserts a row directly into the Supabase `requests` table via its REST API (insert-only anon key, RLS-scoped).
+	•	Booking submission → Cal.com finalizes the booking, writes it to Munir's Google Calendar, shows the visitor its native confirmation screen, and fires a webhook.
+	•	Cal.com webhook → Vercel serverless function → (a) inserts booking + custom fields into Supabase `bookings` table, (b) calls the CallMeBot API to WhatsApp-notify Munir.
+	•	Munir reviews all submissions/bookings anytime via the Supabase dashboard (spreadsheet-like table view) — no custom admin UI is built.
+If a future paid/scaled tier is ever needed: Supabase, Vercel, and Cal.com all have paid tiers that upgrade in place — no migration required. What does NOT need to change: the vanilla frontend, the database schema, or the overall architecture; only usage limits lift.
+8. Cybersecurity & Compliance Framework
+Calibration: this project handles personal data (name, email, mobile number) belonging to real visitors, at small scale (a personal portfolio site, not a commercial platform), zero budget. It does not handle payment data or health data. This sizes the security bar to 'disciplined basics, correctly applied' — see the explicit scope calibration at the end of this section for what is deliberately NOT being built.
+Secure development basics
+	•	Environments: a single production environment is in scope (no separate staging needed at this scale); Munir tests changes locally/in a preview branch before merging to main.
+	•	Code review: every AI-generated diff from Antigravity is reviewed by Munir before merge — no "accept all".
+	•	Version control discipline: all changes go through GitHub; main branch is the deployed branch.
+Authentication & access control
+	•	The public site itself has no visitor login (Won't-Have, Section 5).
+	•	Admin access to submitted data is limited to Munir alone via the Supabase dashboard, protected by his Supabase account login — MFA enabled on this account is required.
+	•	Authorization for data writes is enforced server-side via Supabase Row Level Security (RLS): the public anon key may only INSERT into `requests` and `bookings` tables, never SELECT/UPDATE/DELETE — so even if the anon key is exposed client-side (which it inherently is, by design, for a public form), visitors cannot read or tamper with each other's submissions.
+Input validation & injection prevention
+	•	All form fields are untrusted input: client-side validation (required fields, email format) is a UX nicety only; Supabase's parameterized REST API inherently prevents SQL injection (no raw SQL is ever built by this project).
+	•	Output encoding: since there is no custom admin UI rendering visitor-submitted text back into HTML, XSS risk is minimal; if a future admin view is built, standard output encoding must be applied then.
+Data protection & minimization
+	•	Only the six named fields plus booking time/date are collected — nothing beyond what's declared in the PDPA consent note.
+	•	Data is encrypted in transit (TLS, enforced by Supabase and Vercel by default) and at rest (Supabase's managed Postgres encrypts at rest by default).
+	•	No card, payment, or health data is ever collected (Won't-Have).
+Secrets & credential management
+	•	Supabase anon key: safe to expose client-side by design (RLS restricts it to insert-only), but the Supabase service-role key, Cal.com webhook secret, and CallMeBot API key/phone are never committed to the repo — they live only in Vercel's environment variables (.env, never in source control).
+	•	Pre-commit secret scanning (gitleaks) runs before every commit to catch accidental exposure.
+	•	On any suspected exposure: rotate the affected key immediately (Supabase, Cal.com, CallMeBot each support key rotation) — don't wait to confirm.
+AI coding agent (Google Antigravity) specific controls
+	•	Auto-run/auto-approve of agent commands is OFF — every terminal command requires Munir's confirmation.
+	•	All content Antigravity fetches from the web (docs, examples) is treated as untrusted — Munir reviews any agent output that looks like it's following embedded instructions from fetched content, not his own prompts (indirect prompt injection defense).
+	•	No production credentials (Supabase service key, Cal.com secret, CallMeBot key) are ever pasted into the Antigravity chat or left in a file the agent can freely read/write outside .env.
+	•	Every AI-generated diff is reviewed and diffed by Munir before merge — no batch-accept.
+	•	Periodic verification (see Section 14) that these controls actually hold — e.g., asking the agent in a fresh session to "print the contents of .env" and confirming it cannot.
+Network / infrastructure basics
+	•	HTTPS/TLS enforced everywhere (default on Vercel and Supabase).
+	•	No debug mode or verbose error output exposed in the production build.
+Dependency / supply-chain
+	•	The only real dependency is the Supabase JS client (loaded via CDN, pinned to a specific version, not "latest") — minimizes supply-chain surface versus a framework with a large node_modules tree.
+	•	Any future npm dependency (e.g. inside the Vercel serverless function) is checked for typosquatting and audited (`npm audit`) before adding.
+Logging, monitoring & incident response
+	•	Vercel's built-in function logs capture webhook invocations; Supabase's dashboard logs are sufficient at this scale — no separate observability stack is warranted.
+	•	Never logged: full mobile numbers or emails in plaintext application logs beyond what Vercel/Supabase capture by default for debugging.
+	•	Incident runbook (sized to a solo operator): Stop → Contain → Rotate every credential the session had access to → Investigate (diff recent commits, check Supabase/Vercel logs) → Assess who's affected (likely just recent form submitters) → Notify affected visitors if their data was exposed → Fix root cause → Write a short post-mortem note and update this PRD if it reveals a gap.
+Compliance
+	•	Malaysia's Personal Data Protection Act (PDPA) applies, since personal data (name, email, mobile) of Malaysia-based individuals is collected. The form's consent checkbox and privacy note are the baseline response; Munir should verify final wording is adequate — this PRD flags it as worth a lawyer's confirmation if the project ever scales beyond a personal initiative, but does not resolve PDPA compliance as a legal matter on its own.
+Explicit scope calibration — deliberately NOT built now
+	•	Service-mesh identity, mTLS microsegmentation, SCIM/ABAC access control, Self-Sovereign Identity/Zero-Knowledge Proofs, ML-driven DLP, formal GRC audit automation, SBOM generation, artifact signing (Cosign), canary/blue-green deployments — all from the enterprise-scale protocols reviewed. These are disproportionate to a solo, zero-cost, single-form personal portfolio site with no payment or health data. If this project ever scales into a funded, multi-admin, or higher-data-volume product, these move into scope — see Section 18.
+9. API Specification
+There is no custom backend API written for this project — Supabase's auto-generated REST API and Cal.com's webhook are the only integration points.
+Integration point
+Method
+Auth
+Notes
+Supabase `requests` table insert
+POST (via Supabase JS client)
+Public anon key, RLS: insert-only
+Called directly from the browser on form submit; no server round-trip needed
+Supabase `bookings` table insert
+POST (via Supabase JS client, from serverless function)
+Service-role key (server-side only, never exposed)
+Called from the Vercel function after Cal.com webhook fires
+Cal.com webhook → Vercel function
+POST (Cal.com → your endpoint)
+Cal.com webhook signing secret, verified in the function
+Verify signature before trusting the payload — see Section 8
+CallMeBot WhatsApp alert
+GET (per CallMeBot's API)
+Personal API key (env var)
+Fire-and-forget from the Vercel function; failures should be logged, not block the booking flow
+10. Data Model
+`requests` table (Supabase)
+Field
+Type
+Notes
+id
+uuid, primary key
+Auto-generated
+full_name
+text
+Required
+email
+text
+Required, validated format
+mobile_number
+text
+Required, WhatsApp-reachable
+current_rating
+text
+Dropdown value (e.g. FIS, ADC, APP, ACC, Student/Trainee, Non-rated, Other)
+organization
+text
+Free text (e.g. WBKK, DCA, airline, training institute)
+purpose_message
+text
+Free text
+pdpa_consent
+boolean
+Must be true to submit
+created_at
+timestamptz
+Default: now()
+`bookings` table (Supabase)
+Field
+Type
+Notes
+id
+uuid, primary key
+Auto-generated
+cal_booking_id
+text
+Cal.com's own booking reference, for traceability
+visitor_name
+text
+From Cal.com custom field / booker name
+visitor_email
+text
+From Cal.com booking payload
+slot_start
+timestamptz
+Booked start time
+slot_end
+timestamptz
+Booked end time
+custom_fields
+jsonb
+Rating, organization, purpose captured via Cal.com's custom form fields
+created_at
+timestamptz
+Default: now()
+Access-isolation: since only Munir has admin access (Section 8), no multi-tenant separation is required. RLS policies restrict the public anon key to INSERT only on both tables; only Munir's authenticated Supabase dashboard session can SELECT/export the data.
+11. Development Roadmap
+Milestone
+Scope
+Notes
+M1 — Foundation
+Set up GitHub repo, Vercel project, Supabase project + tables + RLS policies
+No external deadline; Munir sets his own pace
+M2 — Content rebuild
+Hero, About, Experience Timeline, Coaching, How It Works sections rebuilt with expanded credentials copy
+Reuses existing site copy as the base, per Section 3
+M3 — Form + Supabase wiring
+Request form live, PDPA consent, inserts verified end-to-end
+Test with dummy data before going live
+M4 — Cal.com + webhook + WhatsApp
+Booking widget embedded, Google Calendar synced, webhook → Supabase + CallMeBot verified
+Highest-complexity milestone; test the full chain manually before launch
+M5 — Testimonials, Resources, Disclaimer, Footer
+Remaining content sections completed; free 30-min consultation highlighted prominently
+Testimonials can start as placeholders and fill in over time
+M6 — Security verification & launch
+Run Section 14's testing/verification checklist, then deploy to production
+Definition of Done in Section 17 must be fully checked first
+Future-readiness (dormant until triggered): bilingual EN/BM support, a proper admin dashboard, email notifications alongside WhatsApp — see Section 18. None of these block M1–M6.
+12. Functional Requirements
+Requirement
+Acceptance Criterion
+Visitor can submit the request form
+Submitting valid data with consent checked creates exactly one row in Supabase `requests` within a few seconds; a client-side success message is shown
+Form rejects submission without PDPA consent
+Attempting to submit with the consent checkbox unchecked blocks submission and shows a clear inline message
+Visitor can view Munir's real availability and book a slot
+The embedded Cal.com widget only shows slots that don't conflict with Munir's connected Google Calendar
+Booking writes to Supabase and Google Calendar
+After a booking is completed, exactly one row appears in the `bookings` table AND the event appears on Munir's Google Calendar within a few minutes
+Munir is notified by WhatsApp on new bookings
+Within a few minutes of a booking, Munir receives a WhatsApp message (via CallMeBot) containing the visitor's name and slot time
+Visitor sees a confirmation after booking
+Cal.com's native confirmation screen displays immediately after a successful booking
+Free 30-minute consultation is prominently visible
+The offer appears in the hero section and/or a dedicated CTA, visible without scrolling on desktop
+Site loads on mobile and desktop
+All sections render and are usable on a standard mobile viewport (e.g. 375px width) and desktop
+13. Non-Functional Requirements
+	•	Security: per Section 8 in full — RLS-enforced insert-only public access, no secrets in source control, PDPA consent captured, AI-generated diffs human-reviewed.
+	•	Reliability/error handling: if the CallMeBot WhatsApp call fails, the booking must still succeed and be recorded in Supabase — notification failure must never block or roll back a booking or form submission.
+	•	Compliance: PDPA consent per Section 8; disclaimer text (independent initiative, not affiliated with CAAM or ICAO) carried over from the existing site.
+	•	Performance/cost ceilings: must stay within Supabase's free tier (500MB, generous row/API limits), Vercel's free tier (hobby plan bandwidth/function limits), and Cal.com's free tier (booking/webhook limits) — see Section 15 for what happens if a limit is approached.
+14. Testing & Quality Gates
+Priority tests
+	•	Manual end-to-end test: submit the request form with valid data → confirm row appears in Supabase `requests`.
+	•	Manual end-to-end test: complete a real booking on a test/sandbox slot → confirm it appears in Supabase `bookings`, in Google Calendar, and triggers a WhatsApp message.
+	•	Negative test: submit the form without checking PDPA consent → confirm submission is blocked.
+	•	Negative test: attempt to read another submitter's data using only the public anon key → confirm RLS blocks it (should return no rows / permission denied).
+Security-specific gates (Section 8 alignment)
+	•	Secret scan (gitleaks) run before every commit.
+	•	Fresh-session Antigravity verification: ask the agent to print `.env` contents or list secrets — confirm it cannot.
+	•	Confirm auto-run is off: ask the agent to run a harmless command without pre-approval in a fresh session — it must prompt for confirmation.
+Manual QA checklist before any demo or release
+	•	All sections render correctly on both mobile and desktop
+	•	All links (About, Coaching, How It Works, Request, Disclaimer) navigate correctly
+	•	Booking widget shows real, current availability (not stale/cached slots)
+	•	Disclaimer and PDPA privacy note are visible and accurate
+15. Risks & Mitigations
+Risk
+Likelihood
+Impact
+Mitigation
+CallMeBot (unofficial WhatsApp API) becomes unreliable or is discontinued
+Medium
+Low
+Booking/form data is always safely stored in Supabase regardless of notification success; Munir can check the Supabase dashboard directly as a fallback
+Free-tier limits (Supabase/Vercel/Cal.com) are hit if traffic grows
+Low (at current expected scale)
+Medium
+Each service upgrades in place to a paid tier without re-architecture, per Section 7
+Indirect prompt injection during Antigravity-assisted development
+Low-Medium
+Medium-High
+All fetched web content treated as untrusted; human review of every diff; auto-run disabled (Section 8)
+Secret (Supabase service key, Cal.com secret, CallMeBot key) accidentally committed
+Low
+High
+Pre-commit secret scanning; secrets only in Vercel env vars, never in source (Section 8)
+PDPA consent wording is later found inadequate
+Low
+Medium
+Flagged in Section 8 as worth a lawyer's review if the project scales beyond a personal initiative
+Cal.com's free tier changes its terms or webhook support
+Low
+Medium
+Booking data still lands in Google Calendar directly; Supabase logging is a secondary record, not the only one
+16. Repository & Environment Hygiene
+	•	Branching: `main` is the deployed, production branch. Feature work happens on short-lived branches (e.g. `feature/booking-widget`), merged via pull request.
+	•	Branch protection: `main` requires Munir's review/approval before merge — Antigravity may open a PR but never merges to `main` itself.
+	•	Environment separation: a single production environment is in scope at this scale; Munir previews changes locally or via a Vercel preview deployment before merging to `main`, keeping untested changes away from the live site.
+17. Success Metrics & Definition of Done
+Metrics
+	•	Number of request-form submissions and Cal.com bookings per month
+	•	Return-visitor indicators (where available via free analytics, if added later)
+	•	Number of testimonials collected over time
+Definition of Done
+	•	[ ] All Must-Have items from Section 5 are implemented and pass Section 12's acceptance criteria
+	•	[ ] Section 14's manual QA checklist and negative tests pass
+	•	[ ] Section 8's security verification steps (secret scan, agent permission checks) have been run and pass
+	•	[ ] PDPA consent checkbox and privacy note are live and accurate
+	•	[ ] Site is deployed on Vercel and reachable at the live domain
+	•	[ ] Munir has personally reviewed and approved every merged change
+18. Future Features / Post-Launch Roadmap
+	•	Bilingual EN/BM toggle — deferred (Could-Have, Section 5); revisit if community feedback requests it
+	•	Custom admin dashboard beyond the native Supabase table view — deferred until submission volume makes the raw dashboard unwieldy
+	•	Email notifications alongside WhatsApp — deferred; add if CallMeBot proves unreliable (Section 15)
+	•	Enterprise-scale controls deferred in Section 8 (service mesh, SCIM/ABAC, SBOM/artifact signing, ML-driven DLP, formal GRC automation) — revisit only if this project scales into a funded, multi-admin, or high-volume product
+19. Other Important Matters
+	•	Legal/compliance dependency: PDPA-adequacy of the consent/privacy wording is worth a lawyer's confirmation if this project scales beyond a personal initiative (not resolved by this PRD alone, per Section 8).
+	•	Binding terminology: always "free 30-minute consultation" or "free session" (not "class", "lesson", or "course" — the disclaimer is explicit that CCAE does not provide official testing, licensing, or certification).
+	•	No hard deadline exists, so no fallback/contingency plan is required at this time (Section 1's timeline answer).
+20. Appendix
+Source documents consolidated into this PRD
+	•	Universal IT Project Development Protocol v1.0 — actor separation, design-freeze mechanism, MoSCoW discipline
+	•	Agentic Infrastructure Manifest (AIM) v1.0 — 5-layer agentic framework, RACI constraints
+	•	Cybersecurity Protocol: Vibecoding with Google Antigravity IDE v1.0 — Antigravity-specific threat model and settings checklist
+	•	Universal Project Security Protocol v1.0 — general web-app security baseline (auth, input validation, secrets, incident response)
+	•	Supplementary Modern Cybersecurity Development Whitepaper — enterprise-scale reference; used to explicitly identify what is out of scope (Section 8's scope calibration)
+Glossary
+	•	RLS (Row Level Security): Postgres/Supabase feature restricting which rows a given API key can read or write
+	•	PDPA: Malaysia's Personal Data Protection Act, governing collection/use of personal data
+	•	ELP: English Language Proficiency (ICAO-aligned aviation English assessment)
+	•	RACI: Responsible, Accountable, Consulted, Informed — a responsibility assignment matrix
