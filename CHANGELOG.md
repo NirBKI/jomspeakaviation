@@ -29,6 +29,7 @@ All notable changes to this project will be documented in this file.
   - Tactical HUD corner brackets on high-emphasis containers.
   - Contextual dynamic hints in the Coaching Request Form for different aviation roles.
   - Scroll-triggered reveal animations via `IntersectionObserver`.
+- Added reproducible Postgres SQL DDL & Row Level Security (RLS) policies in `supabase/schema.sql`.
 
 ### Fixed
 - Replaced non-existent `gitleaks` npm package target with standard `serve` dev server package and added `"dev"` and `"start"` scripts to `package.json`.

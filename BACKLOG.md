@@ -6,8 +6,8 @@
   - [x] Create core documentation (`README.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `AIM.md`)
   - [x] Setup basic security mechanisms (CI YAML, `package.json` scripts)
 - [ ] Epic: Infrastructure Provisioning
-  - [ ] Initialize Supabase project and define schemas (`requests`, `bookings`)
-  - [ ] Apply RLS policies to Supabase tables
+  - [x] Initialize Supabase project and define schemas (`requests`, `bookings`)
+  - [x] Apply RLS policies to Supabase tables
   - [ ] Connect repository to Vercel
 
 ## Phase 2: Content Rebuild (M2)
